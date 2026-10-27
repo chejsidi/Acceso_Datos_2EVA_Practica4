@@ -1,5 +1,9 @@
 package idao;
 
-/** por ahora sin nada que el dao ya nos da el CRUD geenrico. */
+import models.Course;
+
+import java.util.List;
+
 public interface ICourseDao {
+    List<Course> listCoursesByTeacherLastName(String lastName);
 }

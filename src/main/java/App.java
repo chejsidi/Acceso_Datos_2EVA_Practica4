@@ -25,6 +25,8 @@ public class App {
         tarea5();
         tarea6();
         tarea7();
+        tarea8();
+        tarea9();
     }
 
     private static void tarea1() {
@@ -52,7 +54,7 @@ public class App {
         System.out.println("Actualizado: " + teacherDao.find(nuevo.getId()));
 
         teacherDao.delete(nuevo);
-        System.out.println("Después de borrar: " + teacherDao.find(nuevo.getId()));  // null
+        System.out.println("Después de borrar: " + teacherDao.find(nuevo.getId()));
     }
 
     private static void tarea3() {
@@ -79,7 +81,7 @@ public class App {
             System.out.println("a) Error: " + e.getMessage());
         }
 
-        // b) guardar antes el profesor y después el curso
+        // b) Solución del PDF sin cascada: guardar antes el profesor y después el curso
         try {
             Teacher mikel = new Teacher("Mikel", "Etxebarria");
             teacherDao.create(mikel);
@@ -187,5 +189,35 @@ public class App {
         for (Course c : leido.getCourses()) {
             System.out.println("  - " + c.getTitle());
         }
+    }
+
+    private static void tarea8() {
+        System.out.println("---------------------- TAREA 8 --------------------");
+        System.out.println("Cursos de profesores apellidados López:");
+        for (Course c : courseDao.listCoursesByTeacherLastName("López")) {
+            System.out.println("  - " + c.getTitle() + " (" + c.getTeacher().getFirstName() + ")");
+        }
+
+        // Un apellido que no existe devuelve una lista vacía, no null
+        System.out.println("Cursos de profesores apellidados Inexistente: "
+                + courseDao.listCoursesByTeacherLastName("Inexistente"));
+    }
+
+    private static void tarea9() {
+        System.out.println("---------------------- TAREA 9 --------------------");
+        System.out.println("Estudiantes del curso 1:");
+        for (Student s : studentDao.listStudentsByCourseId(1)) {
+            System.out.println("  - " + s.getFirstName() + " " + s.getLastName());
+        }
+
+        if (idCursoNuevo != null) {
+            System.out.println("Estudiantes del curso " + idCursoNuevo + ":");
+            for (Student s : studentDao.listStudentsByCourseId(idCursoNuevo)) {
+                System.out.println("  - " + s.getFirstName() + " " + s.getLastName());
+            }
+        }
+
+        // Un curso que no existe devuelve una lista vacía
+        System.out.println("Estudiantes del curso -1: " + studentDao.listStudentsByCourseId(-1));
     }
 }
