@@ -8,6 +8,7 @@
         <class>models.Teacher</class>
         <class>models.Course</class>
         <class>models.CourseMaterial</class>
+        <class>models.Student</class>
 
         <properties>
             <property name="hibernate.connection.url" value="jdbc:mariadb://localhost:3306/AD_aulavirtual"/>
