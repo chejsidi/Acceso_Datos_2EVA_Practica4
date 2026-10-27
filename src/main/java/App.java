@@ -1,17 +1,21 @@
 import dao.CourseDao;
+import dao.CourseMaterialDao;
 import dao.TeacherDao;
 import models.Course;
+import models.CourseMaterial;
 import models.Teacher;
 
 public class App {
     private static final TeacherDao teacherDao = new TeacherDao();
     private static final CourseDao courseDao = new CourseDao();
+    private static final CourseMaterialDao courseMaterialDao = new CourseMaterialDao();
 
     public static void main(String[] args) {
         tarea1();
         tarea2();
         tarea3();
         tarea4();
+        tarea5();
     }
 
     private static void tarea1() {
@@ -77,5 +81,37 @@ public class App {
         } catch (Exception e) {
             System.out.println("b) Error: " + e.getMessage());
         }
+    }
+
+    private static void tarea5() {
+        System.out.println("---------------------- TAREA 5 --------------------");
+        // clear(): el EntityManager olvida los objetos que ya tenía en memoria, así find vuelve a leer de la BBDD
+        courseDao.getEntityManager().clear();
+        Course course = courseDao.find(1);
+        if (course == null) {
+            System.out.println("No existe el curso 1");
+            return;
+        }
+
+        // Cada curso solo puede tener un material: si ya lo tiene (otra ejecución), no se crea otro
+        CourseMaterial material = course.getMaterial();
+        if (material == null) {
+            material = new CourseMaterial("https://ejemplo.com/acceso-a-datos");
+            material.setCourse(course);
+            courseMaterialDao.create(material);
+            System.out.println("Material creado: " + material);
+        } else {
+            System.out.println("El curso 1 ya tenía material: " + material);
+        }
+
+        // find del material: trae también su curso (y el profesor del curso)
+        courseMaterialDao.getEntityManager().clear();
+        System.out.println("Material leído: " + courseMaterialDao.find(material.getId()));
+
+        // find del curso: si la consulta trae también el material, el OneToOne es EAGER por defecto
+        courseDao.getEntityManager().clear();
+        Course conMaterial = courseDao.find(1);
+        System.out.println("Curso leído: " + conMaterial);
+        System.out.println("Su material: " + conMaterial.getMaterial().getUrl());
     }
 }

@@ -21,6 +21,11 @@ public class Course {
     @JoinColumn(name = "teacher_id", referencedColumnName = "id")
     private Teacher teacher;
 
+    // Relación inversa del OneToOne: la FK está en CourseMaterial.
+    // Es opcional (por defecto): un curso puede no tener material
+    @OneToOne(mappedBy = "course")
+    private CourseMaterial material;
+
     public Course() {
     }
 
@@ -52,6 +57,15 @@ public class Course {
         this.teacher = teacher;
     }
 
+    public CourseMaterial getMaterial() {
+        return material;
+    }
+
+    public void setMaterial(CourseMaterial material) {
+        this.material = material;
+    }
+
+    // Sin el material: CourseMaterial ya imprime su curso y se llamarían el uno al otro sin fin
     @Override
     public String toString() {
         return "Course{" +
