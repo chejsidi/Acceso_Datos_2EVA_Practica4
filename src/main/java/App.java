@@ -4,12 +4,19 @@ import models.Course;
 import models.Teacher;
 
 public class App {
-    public static void main(String[] args) {
-        TeacherDao teacherDao = new TeacherDao();
-        CourseDao courseDao = new CourseDao();
+    private static final TeacherDao teacherDao = new TeacherDao();
+    private static final CourseDao courseDao = new CourseDao();
 
+    public static void main(String[] args) {
+        tarea1();
+        tarea2();
+        tarea3();
+        tarea4();
+    }
+
+    private static void tarea1() {
         System.out.println("---------------------- TAREA 1 --------------------");
-        // Tarea 1: curso con id 1, que trae también su profesor (ManyToOne, EAGER)
+        // Curso con id 1, que trae también su profesor (ManyToOne, EAGER)
         Course course = courseDao.find(1);
         System.out.println("Curso 1: " + course);
 
@@ -19,8 +26,10 @@ public class App {
             System.out.println("Profesor del curso: " + teacher);
             System.out.println("Sus cursos: " + teacher.getCourses());
         }
+    }
+
+    private static void tarea2() {
         System.out.println("---------------------- TAREA 2 --------------------");
-        // Tarea 2: create, update y delete de Teacher
         Teacher nuevo = new Teacher("Eider", "Arbaiza");
         teacherDao.create(nuevo);
         System.out.println("Creado: " + teacherDao.find(nuevo.getId()));
@@ -30,6 +39,43 @@ public class App {
         System.out.println("Actualizado: " + teacherDao.find(nuevo.getId()));
 
         teacherDao.delete(nuevo);
-        System.out.println("Después de borrar: " + teacherDao.find(nuevo.getId()));
+        System.out.println("Después de borrar: " + teacherDao.find(nuevo.getId()));  // null
+    }
+
+    private static void tarea3() {
+        System.out.println("---------------------- TAREA 3 --------------------");
+        // Curso sin profesor: la relación es obligatoria (optional = false), así que debe fallar
+        try {
+            courseDao.create(new Course("Curso sin profesor"));
+            System.out.println("Se ha guardado (no debería)");
+        } catch (Exception e) {
+            System.out.println("Error esperado: " + e.getMessage());
+        }
+    }
+
+    private static void tarea4() {
+        System.out.println("---------------------- TAREA 4 --------------------");
+        // a) Curso nuevo con un profesor nuevo que todavía no está guardado
+        try {
+            Teacher eider = new Teacher("Eider", "Arbaiza");
+            Course psp = new Course("Programación de Servicios y Procesos");
+            psp.setTeacher(eider);
+            courseDao.create(psp);
+            System.out.println("a) Guardado con su profesor: " + courseDao.find(psp.getId()));
+        } catch (Exception e) {
+            System.out.println("a) Error: " + e.getMessage());
+        }
+
+        // b) Solución del PDF sin cascada: guardar antes el profesor y después el curso
+        try {
+            Teacher mikel = new Teacher("Mikel", "Etxebarria");
+            teacherDao.create(mikel);
+            Course di = new Course("Desarrollo de Interfaces");
+            di.setTeacher(mikel);
+            courseDao.create(di);
+            System.out.println("b) Guardado con su profesor: " + courseDao.find(di.getId()));
+        } catch (Exception e) {
+            System.out.println("b) Error: " + e.getMessage());
+        }
     }
 }

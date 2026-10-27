@@ -13,9 +13,11 @@ public class Course {
     @NotNull
     private String title;
 
-    // Un curso pertenece a un único profesor. Aquí está la FK (columna teacher_id).
-    // EAGER: al leer un curso se trae también su profesor
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    // Un curso pertenece a un único profesor.
+    // optional = false: un curso no puede guardarse sin profesor.
+    // EAGER: al leer un curso se trae también su profesor.
+    // cascade PERSIST: al guardar un curso nuevo, se guarda también su profesor si es nuevo.
+    @ManyToOne(optional = false, fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "teacher_id", referencedColumnName = "id")
     private Teacher teacher;
 

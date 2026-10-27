@@ -18,24 +18,50 @@ abstract class Dao<T, K> {
 
     public T create(T t) {
         EntityTransaction entityTransaction = em.getTransaction();
-        entityTransaction.begin();
-        em.persist(t);
-        entityTransaction.commit();
-        return t;
+        try {
+            entityTransaction.begin();
+            em.persist(t);
+            entityTransaction.commit();
+            return t;
+        } catch (RuntimeException e) {
+            deshacer(entityTransaction);
+            throw e;
+        }
     }
 
     public T update(T t) {
         EntityTransaction entityTransaction = em.getTransaction();
-        entityTransaction.begin();
-        em.merge(t);
-        entityTransaction.commit();
-        return t;
+        try {
+            entityTransaction.begin();
+            em.merge(t);
+            entityTransaction.commit();
+            return t;
+        } catch (RuntimeException e) {
+            deshacer(entityTransaction);
+            throw e;
+        }
     }
 
     public void delete(T t) {
         EntityTransaction entityTransaction = em.getTransaction();
-        entityTransaction.begin();
-        em.remove(t);
-        entityTransaction.commit();
+        try {
+            entityTransaction.begin();
+            em.remove(t);
+            entityTransaction.commit();
+        } catch (RuntimeException e) {
+            deshacer(entityTransaction);
+            throw e;
+        }
+    }
+
+    /**
+     * Si una operación falla, la transacción se queda abierta y la siguiente daría
+     * "Transaction already active". Se deshace y se vacía el EntityManager para poder seguir.
+     */
+    private void deshacer(EntityTransaction entityTransaction) {
+        if (entityTransaction.isActive()) {
+            entityTransaction.rollback();
+        }
+        em.clear();
     }
 }
